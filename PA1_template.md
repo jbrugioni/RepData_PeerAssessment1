@@ -1,14 +1,10 @@
----
-title: "Reproducible Research: Peer Assessment 1"
-output: 
-  html_document:
-    keep_md: true
----
+# Reproducible Research: Peer Assessment 1
 
 
 ## Loading and preprocessing the data
 
-```{r dataload, echo=TRUE}
+
+```r
 # unzip the data file
 unzip("activity.zip");
 
@@ -17,11 +13,23 @@ rawActivity<-read.csv("activity.csv");
 
 # sanity check on the load
 names(rawActivity);
-dim(rawActivity);
+```
 
+```
+## [1] "steps"    "date"     "interval"
+```
+
+```r
+dim(rawActivity);
+```
+
+```
+## [1] 17568     3
+```
+
+```r
 # make a set with no NA's in the step column
 validStepsOnly = rawActivity[!is.na(rawActivity$steps),];
-
 ```
 
 
@@ -37,8 +45,8 @@ validStepsOnly = rawActivity[!is.na(rawActivity$steps),];
 First we will plot the total number of steps per day, excluding any NA values for steps.
 
 
-```{r meanSteps, echo=TRUE}
 
+```r
 library(plyr)
 
 
@@ -50,20 +58,21 @@ sumValidSteps<-ddply(validStepsOnly,c("date"),summarise, sumSteps=sum(steps))
 # make a histogram of the step sums
 hist(sumValidSteps$sumSteps, main="Histogram of Total Number of Steps Taken Each Day",
      xlab="Total Steps per Day");
-
 ```
 
+![](./PA1_template_files/figure-html/meanSteps-1.png) 
 
-```{r computeMeanAndMedian, echo=TRUE}
+
+
+```r
 # compute the mean and median for reporting in the main text
 totalStepsMean <- mean(sumValidSteps$sumSteps);
 totalStepsMedian <- median(sumValidSteps$sumSteps);
-
 ```
 
-The mean of the total number of steps per day is `r totalStepsMean`.
+The mean of the total number of steps per day is 1.0766189\times 10^{4}.
 
-The median of the total number of steps per day is `r totalStepsMedian`
+The median of the total number of steps per day is 10765
 
 
 
@@ -71,8 +80,8 @@ The median of the total number of steps per day is `r totalStepsMedian`
 
 ## What is the average daily activity pattern?
 
-```{r averageSteps, echo=TRUE}
 
+```r
 # get the mean steps per interval
 averageStepsPerInterval <- ddply(validStepsOnly,c("interval"),summarise, meanSteps=mean(steps))
 
@@ -81,14 +90,17 @@ plot(averageStepsPerInterval$interval, averageStepsPerInterval$meanSteps,type='l
      main="Average Daily Activity Pattern", xlab="Interval", ylab="Mean steps")
 ```
 
+![](./PA1_template_files/figure-html/averageSteps-1.png) 
 
-```{r maxAveSteps, echo=TRUE}
+
+
+```r
 # get the interval with the max number of steps
 maxStepIndex <- which.max(averageStepsPerInterval$meanSteps);
 maxInterval <- averageStepsPerInterval$interval[maxStepIndex]; 
 ```
 
-The interval with the maximum number of steps per day is `r maxInterval`.
+The interval with the maximum number of steps per day is 835.
 
 
 
@@ -96,19 +108,19 @@ The interval with the maximum number of steps per day is `r maxInterval`.
 
 ## Imputing missing values
 
-```{r numberNA, echo=TRUE}
+
+```r
 # get the interval with the max number of steps
 numNaSteps <- sum((is.na(rawActivity$steps))==TRUE);
 numNaInterval = sum((is.na(rawActivity$interval))==TRUE);
 numNaDate = sum((is.na(rawActivity$date))==TRUE);
-
 ```
 
-The number of NA step is  `r numNaSteps`.
+The number of NA step is  2304.
 
-The number of NA date is  `r numNaDate`.
+The number of NA date is  0.
 
-The number of NA interval is  `r numNaInterval`.
+The number of NA interval is  0.
 
 
 
@@ -116,8 +128,8 @@ To fill in the missing values the mean for that interval will be used.
 
 
 
-```{r replaceMissing, echo=TRUE}
 
+```r
 # find any intervals with NA steps and replace those values with the mean for that interval
 # with more time, replace this loop with an sapply or similar command
 
@@ -139,16 +151,14 @@ for(i in 1:length(rawActivity$steps))
 
 # diagnostic - verify that all the values have been fixed
 #count( is.na(filledActivity$steps) )
-
-
- 
 ```
 
 
 Now the basic statistics of the new data set will be checked.
 
 
-```{r filledPlot, echo=TRUE}
+
+```r
 # summarise the steps for each day and add back to the frame
 sumFilledSteps<-ddply( filledActivity,c("date"),summarise, sumSteps=sum(steps))
 
@@ -157,11 +167,13 @@ sumFilledSteps<-ddply( filledActivity,c("date"),summarise, sumSteps=sum(steps))
 # make a histogram of the step sums
 hist(sumFilledSteps$sumSteps, main="Histogram of Filled Dataset Total Number of Steps Taken Each Day",
      xlab="Total Steps per Day");
-
 ```
 
+![](./PA1_template_files/figure-html/filledPlot-1.png) 
 
-```{r computeFilledMeanAndMedian, echo=TRUE}
+
+
+```r
 # compute the mean and median for reporting in the main text
 totalStepsMeanFilled <- mean(sumFilledSteps$sumSteps);
 totalStepsMedianFilled <- median(sumFilledSteps$sumSteps);
@@ -170,19 +182,18 @@ totalStepsMedianFilled <- median(sumFilledSteps$sumSteps);
 
 deltaMean <- totalStepsMean - totalStepsMeanFilled;
 deltaMedian <- totalStepsMedian - totalStepsMedianFilled;
-
 ```
 
-The mean of the total number of steps per day is `r totalStepsMeanFilled`.
+The mean of the total number of steps per day is 1.0766189\times 10^{4}.
 
-The median of the total number of steps per day is `r totalStepsMedianFilled`
+The median of the total number of steps per day is 1.0766189\times 10^{4}
 
 
  
 
-The differnces between the filled and original set means of the total number of steps per day is `r deltaMean`.
+The differnces between the filled and original set means of the total number of steps per day is 0.
 
-The differnces between the filled and original set median of the total number of steps per day is `r deltaMedian`.
+The differnces between the filled and original set median of the total number of steps per day is -1.1886792.
 
 
 The impact on the mean is exactly zero as would be expected with a backfill using the mean from the intervals.   
@@ -202,8 +213,8 @@ The shift in the median is non-zero but vanishingly small given the total number
 Generate a new version of the data set with a new column for "weekday" or "weekend".
 
 
-```{r generateWeekdayColumn, echo=TRUE}
 
+```r
 library(lattice)
 
 # first generate the day of the week
@@ -236,10 +247,6 @@ averageStepsPerWeekInterval<-ddply(filledActivity,c("weekday","interval"),summar
 #diagnostic checks
 #dim(averageStepsPerWeekInterval)
 #head(averageStepsPerWeekInterval)
-
- 
-
-
 ```
 
 
