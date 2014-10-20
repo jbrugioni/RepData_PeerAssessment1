@@ -205,8 +205,7 @@ The shift in the median is non-zero but vanishingly small given the total number
 
 
 
-
-
+ 
 ## Are there differences in activity patterns between weekdays and weekends?
 
 
@@ -234,20 +233,20 @@ for(i in 1:length(filledActivity$day)){
   # else leave it as the default weekday
 }
 
-# ran out of time on this one....
+
 
 # get the mean steps per interval
-averageStepsPerWeekdayInterval<-ddply(filledActivity[filledActivity$weekday=="weekday",],c("interval"),summarise, meanSteps=mean(steps))
-
-averageStepsPerWeekendInterval<-ddply(filledActivity[filledActivity$weekday=="weekend",],c("interval"),summarise, meanSteps=mean(steps))
- 
-
 averageStepsPerWeekInterval<-ddply(filledActivity,c("weekday","interval"),summarise, meanSteps=mean(steps))
 
-#diagnostic checks
-#dim(averageStepsPerWeekInterval)
-#head(averageStepsPerWeekInterval)
+
+
+# do the plot
+xyplot(   meanSteps ~ interval | factor(weekday)  ,
+        data = averageStepsPerWeekInterval, type='l',
+        xlab= "Interval", ylab = "Number of Steps");
 ```
+
+![](./PA1_template_files/figure-html/generateWeekdayColumn-1.png) 
 
 
 
