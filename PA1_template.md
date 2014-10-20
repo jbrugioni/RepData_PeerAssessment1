@@ -243,7 +243,8 @@ averageStepsPerWeekInterval<-ddply(filledActivity,c("weekday","interval"),summar
 # do the plot
 xyplot(   meanSteps ~ interval | factor(weekday)  ,
         data = averageStepsPerWeekInterval, type='l',
-        xlab= "Interval", ylab = "Number of Steps");
+        xlab= "Interval", ylab = "Number of Steps",
+        layout=c(1,2));
 ```
 
 ![](./PA1_template_files/figure-html/generateWeekdayColumn-1.png) 
